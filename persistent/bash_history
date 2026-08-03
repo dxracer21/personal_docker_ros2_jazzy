@@ -1,0 +1,31 @@
+whoami
+hostname
+pwd
+echo $ROS_DISTRO
+echo $ROS_DOMAIN_ID
+xclock
+hostname -I
+ip route | grep default
+sudo apt update
+sudo apt install -y openssh-server
+sudo systemctl enable --now ssh
+systemctl is-active ssh
+exit
+ip route | grep default
+exit
+xclock
+echo $DISPLAY
+clear
+echo "DISPLAY=$DISPLAY"
+echo "XAUTHORITY=${XAUTHORITY:-$HOME/.Xauthority}"
+xauth list "$DISPLAY"
+cd ~/personal_docker_ros2_jazzy
+xauth -f .docker.xauth list
+exit
+rviz2
+lsusb
+clear
+exit
+echo $DISPLAY
+xclock
+exit

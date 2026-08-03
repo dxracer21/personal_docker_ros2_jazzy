@@ -1,0 +1,17 @@
+# X11 인증 파일
+.docker.xauth
+
+# ROS 2 자동 생성 결과
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# 실행 중 생성되는 캐시·로그
+persistent/cache/
+persistent/ros/
+persistent/gz/
+
+# 기타 자동 생성 파일
+__pycache__/
+*.pyc
+.DS_Store

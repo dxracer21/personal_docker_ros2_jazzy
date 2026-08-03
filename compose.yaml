@@ -1,0 +1,56 @@
+name: personal_docker_ros2_jazzy
+
+services:
+  jinsoo_docker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USERNAME: jinsoo
+        USER_UID: ${HOST_UID:-1000}
+        USER_GID: ${HOST_GID:-1000}
+
+    image: personal-ros2-jazzy:latest
+    container_name: jinsoo_pc
+    hostname: ros2-jazzy-docker
+
+    privileged: true
+    network_mode: host
+    ipc: host
+
+    stdin_open: true
+    tty: true
+
+    environment:
+      DISPLAY: ${DISPLAY}
+
+      QT_X11_NO_MITSHM: "1"
+      LIBGL_ALWAYS_SOFTWARE: ${LIBGL_ALWAYS_SOFTWARE:-0}
+
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-30}
+      RCUTILS_COLORIZED_OUTPUT: "1"
+
+      HISTFILE: /home/jinsoo/.bash_history
+
+    volumes:
+      # ROS2 소스 및 빌드 결과 영구 저장
+      - ./ros2_ws:/home/jinsoo/ros2_ws
+
+      # 사용자 프로그램 설정 영구 저장
+      - ./persistent/config:/home/jinsoo/.config
+      - ./persistent/ros:/home/jinsoo/.ros
+      - ./persistent/cache:/home/jinsoo/.cache
+      - ./persistent/local:/home/jinsoo/.local
+      - ./persistent/gz:/home/jinsoo/.gz
+      - ./persistent/bash_history:/home/jinsoo/.bash_history
+
+      # X11 GUI 인증과 소켓
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+      # USB, 카메라, 시리얼 장치
+      - /dev:/dev
+      - /run/udev:/run/udev:ro
+
+    working_dir: /home/jinsoo/ros2_ws
+
+    command: ["sleep", "infinity"]
