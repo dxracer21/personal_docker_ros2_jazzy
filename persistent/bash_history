@@ -29,3 +29,31 @@ exit
 echo $DISPLAY
 xclock
 exit
+clear
+rviz2
+gazebo
+clear
+ls
+clear
+echo "===== ROS ====="
+echo $ROS_DISTRO
+echo "===== GAZEBO ====="
+which gz
+gz sim --versions
+echo "===== ROS-GZ ====="
+ros2 pkg list | grep ros_gz
+ls -l /opt/ros/jazzy/bin/ros2
+source /opt/ros/jazzy/setup.bash
+which ros2
+ros2 --help
+echo 'source /opt/ros/jazzy/setup.bash' >> ~/.bashrc
+source ~/.bashrc
+which ros2
+echo $ROS_DISTRO
+exit
+which ros2
+echo $ROS_DISTRO
+which gz
+gz sim --versions
+ros2 pkg list | grep ros_gz
+exit

@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-jazzy-rqt-image-view \
     ros-jazzy-rqt-graph \
     ros-jazzy-rviz2 \
+    ros-jazzy-ros-gz \
     && rm -rf /var/lib/apt/lists/*
 
 # 호스트와 동일한 UID/GID를 사용하는 jinsoo 계정 생성
@@ -94,6 +95,11 @@ RUN mkdir -p /home/${USERNAME}/ros2_ws/src \
     /home/${USERNAME}/ros2_ws/install \
     /home/${USERNAME}/ros2_ws/log \
     && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
+
+# ROS 2 및 작업공간 환경 자동 적용
+RUN echo 'source /opt/ros/jazzy/setup.bash' >> /home/${USERNAME}/.bashrc && \
+    echo '[ -f /home/${USERNAME}/ros2_ws/install/setup.bash ] && source /home/${USERNAME}/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.bashrc && \
+    chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.bashrc
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
