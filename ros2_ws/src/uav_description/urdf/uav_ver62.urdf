@@ -1,0 +1,273 @@
+<?xml version="1.0"?>
+<robot name="uav_ver62">
+
+  <!-- UAV 색상 -->
+  <material name="uav_green">
+    <color rgba="0.0 0.6 0.0 1.0"/>
+  </material>
+
+  <!-- 좌표축 색상 -->
+  <material name="axis_red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </material>
+
+  <material name="axis_green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </material>
+
+  <material name="axis_blue">
+    <color rgba="0.0 0.0 1.0 1.0"/>
+  </material>
+
+
+  <!-- ==================== UAV 본체 ==================== -->
+
+  <link name="base_link">
+
+    <inertial>
+      <origin
+        xyz="-0.050569840203091215 -3.202564255348868e-06 0.005434556406299246"
+        rpy="0 0 0"/>
+
+      <mass value="15.0"/>
+
+      <inertia
+        ixx="0.63"
+        iyy="6.46"
+        izz="6.46"
+        ixy="0.0"
+        iyz="0.0"
+        ixz="0.0"/>
+    </inertial>
+
+    <!-- 비행기 본체 모델 -->
+    <visual name="base_link_visual">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/base_link.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+
+      <material name="uav_green"/>
+    </visual>
+
+
+    <!-- ==================== base_link 좌표축 ==================== -->
+
+    <!-- X축: 빨간색 -->
+    <visual name="base_axis_x">
+      <origin xyz="0.3 0 0" rpy="0 1.5708 0"/>
+
+      <geometry>
+        <cylinder radius="0.015" length="0.6"/>
+      </geometry>
+
+      <material name="axis_red"/>
+    </visual>
+
+    <!-- X축 화살표 머리 -->
+    <visual name="base_axis_x_head">
+      <origin xyz="0.63 0 0" rpy="0 1.5708 0"/>
+
+      <geometry>
+        <cone radius="0.04" length="0.10"/>
+      </geometry>
+
+      <material name="axis_red"/>
+    </visual>
+
+
+    <!-- Y축: 초록색 -->
+    <visual name="base_axis_y">
+      <origin xyz="0 0.3 0" rpy="-1.5708 0 0"/>
+
+      <geometry>
+        <cylinder radius="0.015" length="0.6"/>
+      </geometry>
+
+      <material name="axis_green"/>
+    </visual>
+
+    <!-- Y축 화살표 머리 -->
+    <visual name="base_axis_y_head">
+      <origin xyz="0 0.63 0" rpy="-1.5708 0 0"/>
+
+      <geometry>
+        <cone radius="0.04" length="0.10"/>
+      </geometry>
+
+      <material name="axis_green"/>
+    </visual>
+
+
+    <!-- Z축: 파란색 -->
+    <visual name="base_axis_z">
+      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+
+      <geometry>
+        <cylinder radius="0.015" length="0.6"/>
+      </geometry>
+
+      <material name="axis_blue"/>
+    </visual>
+
+    <!-- Z축 화살표 머리 -->
+    <visual name="base_axis_z_head">
+      <origin xyz="0 0 0.63" rpy="0 0 0"/>
+
+      <geometry>
+        <cone radius="0.04" length="0.10"/>
+      </geometry>
+
+      <material name="axis_blue"/>
+    </visual>
+
+
+    <!-- 본체 충돌 모델 -->
+    <collision name="base_link_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/base_link.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+  </link>
+
+
+  <!-- ==================== 왼쪽 날개 ==================== -->
+
+  <link name="left_wing_1">
+
+    <inertial>
+      <origin
+        xyz="-0.08189955557332364 -0.6634945672157346 -0.0181460003779636"
+        rpy="0 0 0"/>
+
+      <mass value="2.5"/>
+
+      <inertia
+        ixx="0.4608"
+        iyy="0.0101"
+        izz="0.4707"
+        ixy="0.0"
+        iyz="0.0"
+        ixz="0.0"/>
+    </inertial>
+
+    <visual name="left_wing_visual">
+      <origin xyz="-0.075 0.06 -0.18" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/left_wing_1.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+
+      <material name="uav_green"/>
+    </visual>
+
+    <collision name="left_wing_collision">
+      <origin xyz="-0.075 0.06 -0.18" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/left_wing_1.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+  </link>
+
+
+  <!-- ==================== 오른쪽 날개 ==================== -->
+
+  <link name="right_wing_1">
+
+    <inertial>
+      <origin
+        xyz="-0.08189954828725175 0.663494733381595 -0.01814624263399736"
+        rpy="0 0 0"/>
+
+      <mass value="2.5"/>
+
+      <inertia
+        ixx="0.4608"
+        iyy="0.0101"
+        izz="0.4707"
+        ixy="0.0"
+        iyz="0.0"
+        ixz="0.0"/>
+    </inertial>
+
+    <visual name="right_wing_visual">
+      <origin xyz="-0.075 -0.06 -0.18" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/right_wing_1.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+
+      <material name="uav_green"/>
+    </visual>
+
+    <collision name="right_wing_collision">
+      <origin xyz="-0.075 -0.06 -0.18" rpy="0 0 0"/>
+
+      <geometry>
+        <mesh
+          filename="../meshes/right_wing_1.stl"
+          scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+  </link>
+
+
+  <!-- ==================== 날개 관절 ==================== -->
+
+  <joint name="joint_left_wing" type="revolute">
+
+    <origin xyz="0.075 -0.06 0.18" rpy="0 0 0"/>
+
+    <parent link="base_link"/>
+    <child link="left_wing_1"/>
+
+    <axis xyz="0.0 0.0 1.0"/>
+
+    <limit
+      lower="0.0"
+      upper="1.5708"
+      effort="50.0"
+      velocity="1.0"/>
+
+    <dynamics damping="0.5" friction="0.05"/>
+
+  </joint>
+
+
+  <joint name="joint_right_wing" type="revolute">
+
+    <origin xyz="0.075 0.06 0.18" rpy="0 0 0"/>
+
+    <parent link="base_link"/>
+    <child link="right_wing_1"/>
+
+    <axis xyz="0.0 0.0 1.0"/>
+
+    <limit
+      lower="-1.5708"
+      upper="0.0"
+      effort="50.0"
+      velocity="1.0"/>
+
+    <dynamics damping="0.5" friction="0.05"/>
+
+  </joint>
+
+</robot>

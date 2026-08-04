@@ -21,6 +21,25 @@ prepare_x11() {
     export DISPLAY
 }
 
+prepare_directories() {
+    mkdir -p \
+        "${PROJECT_DIR}/ros2_ws/src" \
+        "${PROJECT_DIR}/persistent/config" \
+        "${PROJECT_DIR}/persistent/ros" \
+        "${PROJECT_DIR}/persistent/cache" \
+        "${PROJECT_DIR}/persistent/local" \
+        "${PROJECT_DIR}/persistent/gz"
+
+    touch "${PROJECT_DIR}/persistent/bash_history"
+
+    if [ ! -w "${PROJECT_DIR}/ros2_ws/src" ]; then
+        echo "오류: ros2_ws/src 폴더에 쓰기 권한이 없습니다."
+        echo "호스트에서 다음 명령을 실행하세요:"
+        echo "sudo chown -R \$(id -u):\$(id -g) \"${PROJECT_DIR}/ros2_ws\" \"${PROJECT_DIR}/persistent\""
+        exit 1
+    fi
+}
+
 show_help() {
     cat <<HELP
 사용법:
@@ -40,14 +59,17 @@ COMMAND="${1:-help}"
 
 case "${COMMAND}" in
     build)
+        prepare_directories
         docker compose build "${SERVICE_NAME}"
         ;;
 
     rebuild)
+        prepare_directories
         docker compose build --no-cache "${SERVICE_NAME}"
         ;;
 
     start)
+        prepare_directories
         prepare_x11
         docker compose up -d "${SERVICE_NAME}"
         docker compose ps
@@ -65,6 +87,7 @@ case "${COMMAND}" in
         ;;
 
     restart)
+        prepare_directories
         prepare_x11
         docker compose up -d --force-recreate "${SERVICE_NAME}"
         docker compose ps

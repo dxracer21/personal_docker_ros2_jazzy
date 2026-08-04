@@ -23,20 +23,22 @@ services:
 
     environment:
       DISPLAY: ${DISPLAY}
-
       QT_X11_NO_MITSHM: "1"
       LIBGL_ALWAYS_SOFTWARE: ${LIBGL_ALWAYS_SOFTWARE:-0}
-
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-30}
       RCUTILS_COLORIZED_OUTPUT: "1"
-
       HISTFILE: /home/jinsoo/.bash_history
 
     volumes:
-      # ROS2 소스 및 빌드 결과 영구 저장
-      - ./ros2_ws:/home/jinsoo/ros2_ws
+      # 호스트와 Docker가 함께 수정하는 소스
+      - ./ros2_ws/src:/home/jinsoo/ros2_ws/src
 
-      # 사용자 프로그램 설정 영구 저장
+      # Docker가 관리하는 빌드 결과
+      - ros2_build:/home/jinsoo/ros2_ws/build
+      - ros2_install:/home/jinsoo/ros2_ws/install
+      - ros2_log:/home/jinsoo/ros2_ws/log
+
+      # 사용자 설정
       - ./persistent/config:/home/jinsoo/.config
       - ./persistent/ros:/home/jinsoo/.ros
       - ./persistent/cache:/home/jinsoo/.cache
@@ -44,7 +46,7 @@ services:
       - ./persistent/gz:/home/jinsoo/.gz
       - ./persistent/bash_history:/home/jinsoo/.bash_history
 
-      # X11 GUI 인증과 소켓
+      # X11 GUI
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
 
       # USB, 카메라, 시리얼 장치
@@ -54,3 +56,8 @@ services:
     working_dir: /home/jinsoo/ros2_ws
 
     command: ["sleep", "infinity"]
+
+volumes:
+  ros2_build:
+  ros2_install:
+  ros2_log:

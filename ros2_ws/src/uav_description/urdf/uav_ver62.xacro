@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<robot name="uav_ver62" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find uav_ver2)/urdf/materials.xacro" />
+<xacro:include filename="$(find uav_ver2)/urdf/uav_ver62.trans" />
+<xacro:include filename="$(find uav_ver2)/urdf/uav_ver62.gazebo" />
+<link name="base_link">
+  <!-- Estimated: ScanEagle-class UAV (wingspan ~3.6 m, fuselage 2.65 m). Fusion exported 1130 kg from dense-material default; replaced with ~15 kg hollow fuselage estimate. -->
+  <inertial>
+    <origin xyz="-0.050569840203091215 -3.202564255348868e-06 0.005434556406299246" rpy="0 0 0"/>
+    <mass value="15.0"/>
+    <inertia ixx="0.63" iyy="6.46" izz="6.46" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="left_wing_1">
+  <!-- Estimated carbon/foam composite wing (~1.5 m half-span, ~2.5 kg). COM kept from original export. -->
+  <inertial>
+    <origin xyz="-0.08189955557332364 -0.6634945672157346 -0.0181460003779636" rpy="0 0 0"/>
+    <mass value="2.5"/>
+    <inertia ixx="0.4608" iyy="0.0101" izz="0.4707" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.075 0.06 -0.18" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/left_wing_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.075 0.06 -0.18" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/left_wing_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="right_wing_1">
+  <!-- Mirror of left_wing_1. -->
+  <inertial>
+    <origin xyz="-0.08189954828725175 0.663494733381595 -0.01814624263399736" rpy="0 0 0"/>
+    <mass value="2.5"/>
+    <inertia ixx="0.4608" iyy="0.0101" izz="0.4707" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.075 -0.06 -0.18" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/right_wing_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.075 -0.06 -0.18" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://uav_ver2/meshes/right_wing_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="joint_left_wing" type="continuous">
+  <origin xyz="0.075 -0.06 0.18" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="left_wing_1"/>
+  <axis xyz="0.0 0.0 1.0"/>
+  <dynamics damping="0.1" friction="0.01"/>
+</joint>
+
+<joint name="joint_right_wing" type="continuous">
+  <origin xyz="0.075 0.06 0.18" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="right_wing_1"/>
+  <axis xyz="0.0 0.0 1.0"/>
+  <dynamics damping="0.1" friction="0.01"/>
+</joint>
+
+</robot>
