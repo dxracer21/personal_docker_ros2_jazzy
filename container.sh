@@ -71,7 +71,7 @@ case "${COMMAND}" in
     start)
         prepare_directories
         prepare_x11
-        docker compose up -d "${SERVICE_NAME}"
+        docker compose up -d --build "${SERVICE_NAME}"
         docker compose ps
         ;;
 

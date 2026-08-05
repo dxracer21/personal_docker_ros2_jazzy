@@ -48,6 +48,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-jazzy-rqt-graph \
     ros-jazzy-rviz2 \
     ros-jazzy-ros-gz \
+    ros-jazzy-ros2-control \
+    ros-jazzy-ros2-controllers \
+    ros-jazzy-gz-ros2-control \
+    ros-jazzy-realsense2-description \
     && rm -rf /var/lib/apt/lists/*
 
 # 호스트와 동일한 UID/GID를 사용하는 jinsoo 계정 생성
@@ -113,6 +117,16 @@ ENV RCUTILS_COLORIZED_OUTPUT=1
 USER ${USERNAME}
 
 WORKDIR /home/${USERNAME}/ros2_ws
+
+# 새 터미널에서도 ROS 2 환경 자동 적용
+RUN printf '%s\n' \
+    '' \
+    '# ROS 2 Jazzy environment' \
+    'source /opt/ros/jazzy/setup.bash' \
+    'if [ -f "$HOME/ros2_ws/install/setup.bash" ]; then' \
+    '    source "$HOME/ros2_ws/install/setup.bash"' \
+    'fi' \
+    >> /home/jinsoo/.bashrc
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 

@@ -3,7 +3,7 @@
 
   <!-- UAV 색상 -->
   <material name="uav_green">
-    <color rgba="0.0 0.6 0.0 1.0"/>
+    <color rgba="0.0 0.6 0.0 0.60"/>
   </material>
 
   <!-- 좌표축 색상 -->
@@ -26,7 +26,7 @@
 
     <inertial>
       <origin
-        xyz="-0.050569840203091215 -3.202564255348868e-06 0.005434556406299246"
+        xyz="0.050569840203091215 3.202564255348868e-06 0.005434556406299246"
         rpy="0 0 0"/>
 
       <mass value="15.0"/>
@@ -42,12 +42,12 @@
 
     <!-- 비행기 본체 모델 -->
     <visual name="base_link_visual">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
 
       <geometry>
         <mesh
           filename="../meshes/base_link.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
 
       <material name="uav_green"/>
@@ -58,21 +58,21 @@
 
     <!-- X축: 빨간색 -->
     <visual name="base_axis_x">
-      <origin xyz="0.3 0 0" rpy="0 1.5708 0"/>
+      <origin xyz="0.4 0 0" rpy="0 1.5708 0"/>
 
       <geometry>
-        <cylinder radius="0.015" length="0.6"/>
+        <cylinder radius="0.025" length="0.8"/>
       </geometry>
 
       <material name="axis_red"/>
     </visual>
 
-    <!-- X축 화살표 머리 -->
+    <!-- X축 끝점 (URDF는 cone geometry를 지원하지 않음) -->
     <visual name="base_axis_x_head">
-      <origin xyz="0.63 0 0" rpy="0 1.5708 0"/>
+      <origin xyz="0.84 0 0" rpy="0 0 0"/>
 
       <geometry>
-        <cone radius="0.04" length="0.10"/>
+        <sphere radius="0.05"/>
       </geometry>
 
       <material name="axis_red"/>
@@ -81,21 +81,21 @@
 
     <!-- Y축: 초록색 -->
     <visual name="base_axis_y">
-      <origin xyz="0 0.3 0" rpy="-1.5708 0 0"/>
+      <origin xyz="0 0.4 0" rpy="-1.5708 0 0"/>
 
       <geometry>
-        <cylinder radius="0.015" length="0.6"/>
+        <cylinder radius="0.025" length="0.8"/>
       </geometry>
 
       <material name="axis_green"/>
     </visual>
 
-    <!-- Y축 화살표 머리 -->
+    <!-- Y축 끝점 -->
     <visual name="base_axis_y_head">
-      <origin xyz="0 0.63 0" rpy="-1.5708 0 0"/>
+      <origin xyz="0 0.84 0" rpy="0 0 0"/>
 
       <geometry>
-        <cone radius="0.04" length="0.10"/>
+        <sphere radius="0.05"/>
       </geometry>
 
       <material name="axis_green"/>
@@ -104,21 +104,21 @@
 
     <!-- Z축: 파란색 -->
     <visual name="base_axis_z">
-      <origin xyz="0 0 0.3" rpy="0 0 0"/>
+      <origin xyz="0 0 0.4" rpy="0 0 0"/>
 
       <geometry>
-        <cylinder radius="0.015" length="0.6"/>
+        <cylinder radius="0.025" length="0.8"/>
       </geometry>
 
       <material name="axis_blue"/>
     </visual>
 
-    <!-- Z축 화살표 머리 -->
+    <!-- Z축 끝점 -->
     <visual name="base_axis_z_head">
-      <origin xyz="0 0 0.63" rpy="0 0 0"/>
+      <origin xyz="0 0 0.84" rpy="0 0 0"/>
 
       <geometry>
-        <cone radius="0.04" length="0.10"/>
+        <sphere radius="0.05"/>
       </geometry>
 
       <material name="axis_blue"/>
@@ -127,12 +127,12 @@
 
     <!-- 본체 충돌 모델 -->
     <collision name="base_link_collision">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 3.141592653589793"/>
 
       <geometry>
         <mesh
           filename="../meshes/base_link.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
     </collision>
 
@@ -165,7 +165,7 @@
       <geometry>
         <mesh
           filename="../meshes/left_wing_1.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
 
       <material name="uav_green"/>
@@ -177,7 +177,7 @@
       <geometry>
         <mesh
           filename="../meshes/left_wing_1.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
     </collision>
 
@@ -210,7 +210,7 @@
       <geometry>
         <mesh
           filename="../meshes/right_wing_1.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
 
       <material name="uav_green"/>
@@ -222,7 +222,7 @@
       <geometry>
         <mesh
           filename="../meshes/right_wing_1.stl"
-          scale="0.001 0.001 0.001"/>
+          scale="0.0003 0.0003 0.0003"/>
       </geometry>
     </collision>
 
@@ -233,7 +233,7 @@
 
   <joint name="joint_left_wing" type="revolute">
 
-    <origin xyz="0.075 -0.06 0.18" rpy="0 0 0"/>
+    <origin xyz="-0.075 0.06 0.18" rpy="0 0 3.141592653589793"/>
 
     <parent link="base_link"/>
     <child link="left_wing_1"/>
@@ -253,7 +253,7 @@
 
   <joint name="joint_right_wing" type="revolute">
 
-    <origin xyz="0.075 0.06 0.18" rpy="0 0 0"/>
+    <origin xyz="-0.075 -0.06 0.18" rpy="0 0 3.141592653589793"/>
 
     <parent link="base_link"/>
     <child link="right_wing_1"/>
@@ -269,5 +269,39 @@
     <dynamics damping="0.5" friction="0.05"/>
 
   </joint>
+
+
+
+  <!-- 실행 중에도 수동 pose를 유지하도록 모든 링크의 중력 비활성화 -->
+  <!-- 수동 6D 목표물: 물리엔진의 선속도/각속도에 의한 표류 방지 -->
+  <gazebo>
+    <static>true</static>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <gravity>false</gravity>
+  </gazebo>
+  <gazebo reference="left_wing_1">
+    <gravity>false</gravity>
+  </gazebo>
+  <gazebo reference="right_wing_1">
+    <gravity>false</gravity>
+  </gazebo>
+
+  <!-- base_link와 일치하는 UAV 모델의 world 6D pose 발행 -->
+  <gazebo>
+    <plugin
+      filename="gz-sim-pose-publisher-system"
+      name="gz::sim::systems::PosePublisher">
+      <publish_model_pose>true</publish_model_pose>
+      <publish_link_pose>false</publish_link_pose>
+      <publish_collision_pose>false</publish_collision_pose>
+      <publish_visual_pose>false</publish_visual_pose>
+      <publish_nested_model_pose>false</publish_nested_model_pose>
+      <use_pose_vector_msg>false</use_pose_vector_msg>
+      <static_publisher>false</static_publisher>
+      <update_frequency>30</update_frequency>
+    </plugin>
+  </gazebo>
 
 </robot>
