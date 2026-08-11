@@ -68,6 +68,19 @@ Visualization Manager:
         omy_workspace: true
       Queue Size: 10
       Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /uav/visual_marker
+      Name: UAV Visual Marker
+      Namespaces:
+        uav_visual: true
+      Queue Size: 10
+      Value: true
     - Class: rviz_default_plugins/InteractiveMarkers
       Enabled: true
       Interactive Markers Namespace: /uav_pose_control

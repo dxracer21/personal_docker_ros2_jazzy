@@ -7,6 +7,7 @@ import rclpy
 from geometry_msgs.msg import PoseStamped
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+from std_srvs.srv import SetBool, Trigger
 
 
 def rotation_matrix(axis, angle):
@@ -46,6 +47,19 @@ def orientation_error(current, target):
     )
 
 
+def parse_initial_positions(value):
+    if isinstance(value, str):
+        parts = [part.strip() for part in value.split(',') if part.strip()]
+    else:
+        parts = list(value)
+    positions = [float(part) for part in parts]
+    if len(positions) == 6:
+        return np.array(positions, dtype=float), 0.0
+    if len(positions) == 7:
+        return np.array(positions[:6], dtype=float), positions[-1]
+    raise ValueError(f'Expected 6 arm values or 7 arm+gripper values; got {len(positions)}')
+
+
 class OmyTargetFollowJointState(Node):
     """Preview target-pose tracking by publishing OMY joint states in RViz."""
 
@@ -79,6 +93,9 @@ class OmyTargetFollowJointState(Node):
     def __init__(self):
         super().__init__('omy_target_follow_joint_state')
         self.declare_parameter('target_pose_topic', '/omy/target_pose')
+        self.declare_parameter('set_enabled_service', '/omy_preview_tracking/set_enabled')
+        self.declare_parameter('reset_service', '/omy_preview_tracking/reset')
+        self.declare_parameter('start_enabled', False)
         self.declare_parameter('joint_state_topic', '/joint_states')
         self.declare_parameter('publish_rate', 30.0)
         self.declare_parameter('orientation_weight', 0.05)
@@ -87,27 +104,52 @@ class OmyTargetFollowJointState(Node):
         self.declare_parameter('ik_iterations_per_tick', 4)
         self.declare_parameter('position_tolerance', 0.01)
         self.declare_parameter('gripper_position', 0.0)
+        self.declare_parameter('initial_joint_positions', '0.0,-1.3950,2.3698,-1.0527,1.5707963267948966,0.0')
 
         target_pose_topic = self.get_parameter('target_pose_topic').value
         joint_state_topic = self.get_parameter('joint_state_topic').value
+        set_enabled_service = self.get_parameter('set_enabled_service').value
+        reset_service = self.get_parameter('reset_service').value
         publish_rate = float(self.get_parameter('publish_rate').value)
 
+        self.enabled = bool(self.get_parameter('start_enabled').value)
         self.orientation_weight = float(self.get_parameter('orientation_weight').value)
         self.damping = float(self.get_parameter('damping').value)
         self.max_joint_step = float(self.get_parameter('max_joint_step').value)
         self.ik_iterations_per_tick = int(self.get_parameter('ik_iterations_per_tick').value)
         self.position_tolerance = float(self.get_parameter('position_tolerance').value)
         self.gripper_position = float(self.get_parameter('gripper_position').value)
+        initial_joint_positions = self.get_parameter('initial_joint_positions').value
+        self.q, parsed_gripper_position = parse_initial_positions(initial_joint_positions)
+        self.initial_q = self.q.copy()
+        self.gripper_position = parsed_gripper_position
+        self.initial_gripper_position = self.gripper_position
 
-        self.q = np.zeros(6)
         self.target_position = None
         self.target_rotation = None
         self.publisher = self.create_publisher(JointState, joint_state_topic, 10)
+        self.create_service(SetBool, set_enabled_service, self.set_enabled_callback)
+        self.create_service(Trigger, reset_service, self.reset_callback)
         self.create_subscription(PoseStamped, target_pose_topic, self.pose_callback, 10)
         self.create_timer(1.0 / publish_rate, self.update_and_publish)
         self.get_logger().info(
-            f'Preview-following {target_pose_topic} by publishing {joint_state_topic}'
+            f'Preview-following {target_pose_topic} by publishing {joint_state_topic}; enabled={self.enabled}'
         )
+
+    def set_enabled_callback(self, request, response):
+        self.enabled = bool(request.data)
+        response.success = True
+        response.message = 'preview tracking enabled' if self.enabled else 'preview tracking stopped'
+        return response
+
+    def reset_callback(self, request, response):
+        self.q = self.initial_q.copy()
+        self.gripper_position = self.initial_gripper_position
+        self.enabled = False
+        self.publish_joint_state()
+        response.success = True
+        response.message = 'reset to initial pose and stopped preview tracking'
+        return response
 
     def pose_callback(self, msg):
         pose = msg.pose
@@ -174,7 +216,8 @@ class OmyTargetFollowJointState(Node):
         self.publisher.publish(msg)
 
     def update_and_publish(self):
-        self.solve_one_step()
+        if self.enabled:
+            self.solve_one_step()
         self.publish_joint_state()
 
 

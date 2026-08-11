@@ -12,7 +12,6 @@ from visualization_msgs.msg import (
     InteractiveMarker,
     InteractiveMarkerControl,
     InteractiveMarkerFeedback,
-    Marker,
 )
 
 
@@ -62,32 +61,6 @@ class UavInteractiveControl(Node):
         marker.pose.position.z = 1.0
         marker.pose.orientation.w = 1.0
         self.current_pose = deepcopy(marker.pose)
-
-        body_control = InteractiveMarkerControl()
-        body_control.always_visible = True
-        body_control.interaction_mode = InteractiveMarkerControl.MOVE_ROTATE_3D
-        for mesh_name in (
-            'base_link.stl',
-            'left_wing_1.stl',
-            'right_wing_1.stl',
-        ):
-            body = Marker()
-            body.type = Marker.MESH_RESOURCE
-            body.mesh_resource = (
-                f'package://uav_description/meshes/{mesh_name}'
-            )
-            body.mesh_use_embedded_materials = False
-            body.pose.orientation.z = 1.0
-            body.pose.orientation.w = 0.0
-            body.scale.x = 0.0003
-            body.scale.y = 0.0003
-            body.scale.z = 0.0003
-            body.color.r = 0.35
-            body.color.g = 1.0
-            body.color.b = 0.85
-            body.color.a = 0.9
-            body_control.markers.append(body)
-        marker.controls.append(body_control)
 
         self.add_axis_controls(marker, 'x', 1.0, 0.0, 0.0)
         self.add_axis_controls(marker, 'y', 0.0, 1.0, 0.0)

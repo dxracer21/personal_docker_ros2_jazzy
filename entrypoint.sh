@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
-# ROS 2 Jazzy 환경 불러오기
 source /opt/ros/jazzy/setup.bash
 
-# 작업공간을 빌드한 경우 자동으로 환경 불러오기
-if [ -f "/home/jinsoo/ros2_ws/install/setup.bash" ]; then
-    source /home/jinsoo/ros2_ws/install/setup.bash
+if [ -f "${OPEN_MANIPULATOR_WS:-/root/ros2_ws}/install/setup.bash" ]; then
+    source "${OPEN_MANIPULATOR_WS:-/root/ros2_ws}/install/setup.bash"
 fi
 
-cd /home/jinsoo/ros2_ws
+PERSONAL_WS="${PERSONAL_WS:-/home/jinsoo/ros2_ws}"
+cd "${PERSONAL_WS}"
+
+if [ "${AUTO_COLCON_BUILD:-1}" = "1" ] && find src -mindepth 2 -name package.xml -print -quit | grep -q .; then
+    echo "[entrypoint] Building ${PERSONAL_WS}"
+    colcon build --symlink-install
+fi
+
+if [ -f "${PERSONAL_WS}/install/setup.bash" ]; then
+    source "${PERSONAL_WS}/install/setup.bash"
+fi
 
 exec "$@"

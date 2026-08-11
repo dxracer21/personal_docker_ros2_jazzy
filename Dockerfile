@@ -1,61 +1,28 @@
-FROM ros:jazzy-ros-base-noble
+FROM robotis/open-manipulator:5.0.0
 
-ARG DEBIAN_FRONTEND=noninteractive
 ARG USERNAME=jinsoo
 ARG USER_UID=1000
 ARG USER_GID=1000
 
 SHELL ["/bin/bash", "-c"]
 
-# 기본 개발 도구, USB 도구, GUI 도구 설치
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    sudo \
-    git \
-    git-lfs \
-    curl \
-    wget \
-    vim \
-    nano \
-    tmux \
-    htop \
-    tree \
-    less \
-    bash-completion \
-    build-essential \
-    cmake \
-    pkg-config \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    python3-rosdep \
-    python3-colcon-common-extensions \
-    iproute2 \
-    iputils-ping \
-    net-tools \
-    dnsutils \
-    procps \
-    lsof \
-    usbutils \
-    udev \
-    v4l-utils \
-    x11-apps \
-    x11-utils \
-    mesa-utils \
-    ros-jazzy-desktop-full \
-    ros-jazzy-rqt \
-    ros-jazzy-rqt-common-plugins \
-    ros-jazzy-rqt-image-view \
-    ros-jazzy-rqt-graph \
-    ros-jazzy-rviz2 \
-    ros-jazzy-ros-gz \
-    ros-jazzy-ros2-control \
-    ros-jazzy-ros2-controllers \
-    ros-jazzy-gz-ros2-control \
-    ros-jazzy-realsense2-description \
-    && rm -rf /var/lib/apt/lists/*
-
-# 호스트와 동일한 UID/GID를 사용하는 jinsoo 계정 생성
+# The ROBOTIS image already includes OMY and most MoveIt packages.
+# Add only the Python binding used by the target tracker.
 RUN set -eux; \
+    if ! dpkg -s ros-jazzy-moveit-py >/dev/null 2>&1; then \
+        apt-get update && \
+        apt-get install -y --no-install-recommends ros-jazzy-moveit-py && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
+# Keep the official OMY/MoveIt workspace from the base image, and add a
+# host-matching user for this personal workspace.
+RUN set -eux; \
+    if ! command -v sudo >/dev/null 2>&1; then \
+        apt-get update && \
+        apt-get install -y --no-install-recommends sudo && \
+        rm -rf /var/lib/apt/lists/*; \
+    fi; \
     EXISTING_GROUP="$(getent group "${USER_GID}" | cut -d: -f1 || true)"; \
     if [ -n "${EXISTING_GROUP}" ]; then \
         if [ "${EXISTING_GROUP}" != "${USERNAME}" ]; then \
@@ -82,52 +49,49 @@ RUN set -eux; \
             --shell /bin/bash \
             "${USERNAME}"; \
     fi; \
-    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" \
-        > "/etc/sudoers.d/${USERNAME}"; \
-    chmod 0440 "/etc/sudoers.d/${USERNAME}"
-
-# USB, 시리얼, 카메라, GPU 장치 접근용 그룹
-RUN for group in dialout video plugdev render; do \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USERNAME}"; \
+    chmod 0440 "/etc/sudoers.d/${USERNAME}"; \
+    for group in dialout video plugdev render; do \
         if getent group "${group}" >/dev/null; then \
-            usermod -aG "${group}" ${USERNAME}; \
+            usermod -aG "${group}" "${USERNAME}"; \
         fi; \
-    done
-
-# ROS2 작업공간 생성
-RUN mkdir -p /home/${USERNAME}/ros2_ws/src \
-    /home/${USERNAME}/ros2_ws/build \
-    /home/${USERNAME}/ros2_ws/install \
-    /home/${USERNAME}/ros2_ws/log \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
-
-# ROS 2 및 작업공간 환경 자동 적용
-RUN echo 'source /opt/ros/jazzy/setup.bash' >> /home/${USERNAME}/.bashrc && \
-    echo '[ -f /home/${USERNAME}/ros2_ws/install/setup.bash ] && source /home/${USERNAME}/ros2_ws/install/setup.bash' >> /home/${USERNAME}/.bashrc && \
-    chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.bashrc
+    done; \
+    mkdir -p \
+        "/home/${USERNAME}/ros2_ws/src" \
+        "/home/${USERNAME}/ros2_ws/build" \
+        "/home/${USERNAME}/ros2_ws/install" \
+        "/home/${USERNAME}/ros2_ws/log"; \
+    chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}"; \
+    if [ -d /root/ros2_ws ]; then \
+        chmod o+x /root; \
+        chmod -R a+rX /root/ros2_ws; \
+    fi
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENV HOME=/home/${USERNAME}
 ENV USER=${USERNAME}
 ENV QT_X11_NO_MITSHM=1
 ENV RCUTILS_COLORIZED_OUTPUT=1
+ENV PERSONAL_WS=/home/${USERNAME}/ros2_ws
+ENV OPEN_MANIPULATOR_WS=/root/ros2_ws
+ENV AUTO_COLCON_BUILD=1
 
 USER ${USERNAME}
-
 WORKDIR /home/${USERNAME}/ros2_ws
 
-# 새 터미널에서도 ROS 2 환경 자동 적용
-RUN printf '%s\n' \
-    '' \
-    '# ROS 2 Jazzy environment' \
-    'source /opt/ros/jazzy/setup.bash' \
-    'if [ -f "$HOME/ros2_ws/install/setup.bash" ]; then' \
-    '    source "$HOME/ros2_ws/install/setup.bash"' \
-    'fi' \
-    >> /home/jinsoo/.bashrc
+RUN { \
+    echo ''; \
+    echo '# ROS 2 Jazzy + ROBOTIS OpenMANIPULATOR environment'; \
+    echo 'source /opt/ros/jazzy/setup.bash'; \
+    echo 'if [ -f /root/ros2_ws/install/setup.bash ]; then'; \
+    echo '    source /root/ros2_ws/install/setup.bash'; \
+    echo 'fi'; \
+    echo 'if [ -f "$HOME/ros2_ws/install/setup.bash" ]; then'; \
+    echo '    source "$HOME/ros2_ws/install/setup.bash"'; \
+    echo 'fi'; \
+    } >> /home/${USERNAME}/.bashrc
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
 CMD ["sleep", "infinity"]
