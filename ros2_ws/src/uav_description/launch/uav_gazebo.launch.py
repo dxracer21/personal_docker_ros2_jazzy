@@ -2,13 +2,14 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
     realtime_pose = LaunchConfiguration('realtime_pose')
+    show_rviz = LaunchConfiguration('show_rviz')
 
     gazebo_launch = PathJoinSubstitution([
         FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py',
@@ -22,6 +23,9 @@ def generate_launch_description():
     rviz_config = PathJoinSubstitution([
         FindPackageShare('uav_description'), 'rviz', 'uav_interactive.rviz',
     ])
+    rviz_condition = IfCondition(PythonExpression([
+        "'", realtime_pose, "' == 'true' and '", show_rviz, "' == 'true'",
+    ]))
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gazebo_launch),
@@ -86,7 +90,7 @@ def generate_launch_description():
         name='uav_interactive_rviz',
         output='screen',
         arguments=['-d', rviz_config],
-        condition=IfCondition(realtime_pose),
+        condition=rviz_condition,
     )
 
     return LaunchDescription([
@@ -98,11 +102,16 @@ def generate_launch_description():
                 'true: RViz marker streams pose while dragging'
             ),
         ),
+        DeclareLaunchArgument(
+            'show_rviz',
+            default_value='true',
+            description='true: open the standalone UAV RViz view in realtime mode',
+        ),
         gazebo,
         pose_bridge,
         pose_output,
         set_pose_service_bridge,
         rviz,
-        TimerAction(period=3.0, actions=[spawn_uav]),
-        TimerAction(period=3.5, actions=[interactive_control]),
+        TimerAction(period=8.0, actions=[spawn_uav]),
+        TimerAction(period=8.5, actions=[interactive_control]),
     ])

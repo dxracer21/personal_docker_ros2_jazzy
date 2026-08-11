@@ -31,6 +31,7 @@ def generate_launch_description():
     use_sim = LaunchConfiguration('use_sim')
     workspace_reach = LaunchConfiguration('workspace_reach')
     workspace_alpha = LaunchConfiguration('workspace_alpha')
+    follow_orientation_weight = LaunchConfiguration('follow_orientation_weight')
     effective_use_gripper = PythonExpression([
         "'true' if (",
         "'", gazebo, "' == 'false' and '",
@@ -209,9 +210,12 @@ def generate_launch_description():
 
     rviz_only_joint_state = Node(
         package='uav_description',
-        executable='omy_zero_joint_state.py',
-        name='omy_zero_joint_state',
+        executable='omy_target_follow_joint_state.py',
+        name='omy_target_follow_joint_state',
         output='screen',
+        parameters=[{
+            'orientation_weight': follow_orientation_weight,
+        }],
         condition=UnlessCondition(gazebo),
     )
 
@@ -270,7 +274,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'rviz',
             default_value='true',
-            description='true: open RViz with OMY RobotModel and UAV marker displays',
+            description='true: open RViz with target-following OMY RobotModel and UAV marker displays',
         ),
         DeclareLaunchArgument(
             'display_gripper',
@@ -301,6 +305,11 @@ def generate_launch_description():
             'workspace_alpha',
             default_value='0.18',
             description='Initial OMY workspace sphere alpha',
+        ),
+        DeclareLaunchArgument(
+            'follow_orientation_weight',
+            default_value='0.05',
+            description='Target-follow preview orientation weight; higher values favor EE orientation',
         ),
         gazebo_resource_path,
         uav_gazebo,

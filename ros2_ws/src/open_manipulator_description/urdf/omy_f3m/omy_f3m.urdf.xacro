@@ -6,18 +6,22 @@
   <xacro:arg name="mock_sensor_commands" default="false" />
   <xacro:arg name="config_type" default="omy_f3m" />
   <xacro:arg name="ros2_control_type" default="omy_f3m_position" />
+  <xacro:arg name="use_gripper" default="true" />
 
   <xacro:include filename="$(find open_manipulator_description)/urdf/omy_f3m/omy_f3m_arm.urdf.xacro" />
 
   <xacro:include filename="$(find open_manipulator_description)/gazebo/omy_f3m.gazebo.xacro" />
 
-  <xacro:include filename="$(find open_manipulator_description)/urdf/omy_f3m/rh_p12_rn_a.urdf.xacro" />
-
-  <xacro:include filename="$(find open_manipulator_description)/gazebo/rh_p12_rn_a.gazebo.xacro" />
+  <xacro:if value="$(arg use_gripper)">
+    <xacro:include filename="$(find open_manipulator_description)/urdf/omy_f3m/rh_p12_rn_a.urdf.xacro" />
+    <xacro:include filename="$(find open_manipulator_description)/gazebo/rh_p12_rn_a.gazebo.xacro" />
+  </xacro:if>
 
   <xacro:include filename="$(find open_manipulator_description)/ros2_control/$(arg ros2_control_type).ros2_control.xacro" />
 
-  <xacro:include filename="$(find open_manipulator_description)/ros2_control/omy_f3m_end_unit.ros2_control.xacro" />
+  <xacro:if value="$(arg use_gripper)">
+    <xacro:include filename="$(find open_manipulator_description)/ros2_control/omy_f3m_end_unit.ros2_control.xacro" />
+  </xacro:if>
 
   <link name="world"/>
 
@@ -27,12 +31,14 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <joint name="$(arg prefix)gripper_fixed" type="fixed">
-    <origin xyz="0 -0.006 0" rpy="1.57 -1.57 0"/>
-    <parent link="$(arg prefix)end_effector_flange_link"/>
-    <axis xyz="0 0 0"/>
-    <child link="$(arg prefix)rh_p12_rn_base"/>
-  </joint>
+  <xacro:if value="$(arg use_gripper)">
+    <joint name="$(arg prefix)gripper_fixed" type="fixed">
+      <origin xyz="0 -0.006 0" rpy="1.57 -1.57 0"/>
+      <parent link="$(arg prefix)end_effector_flange_link"/>
+      <axis xyz="0 0 0"/>
+      <child link="$(arg prefix)rh_p12_rn_base"/>
+    </joint>
+  </xacro:if>
 
   <joint name="$(arg prefix)end_effector_joint" type="fixed">
     <parent link="$(arg prefix)end_effector_flange_link"/>
@@ -54,18 +60,22 @@
 
   <xacro:omy_f3m prefix="$(arg prefix)" />
   <xacro:omy_f3m_gazebo prefix="$(arg prefix)" />
-  <xacro:rh_p12_rn_a prefix="$(arg prefix)" />
-  <xacro:rh_p12_rn_a_gazebo prefix="$(arg prefix)" />
+  <xacro:if value="$(arg use_gripper)">
+    <xacro:rh_p12_rn_a prefix="$(arg prefix)" />
+    <xacro:rh_p12_rn_a_gazebo prefix="$(arg prefix)" />
+  </xacro:if>
 
   <xacro:omy_f3m_system
     name="OMYF3MSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
     use_mock_hardware="$(arg use_mock_hardware)"
     mock_sensor_commands="$(arg mock_sensor_commands)"/>
 
-  <xacro:omy_f3m_end_unit_system
-    name="OMYF3MEndUnitSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
-    use_mock_hardware="$(arg use_mock_hardware)"
-    mock_sensor_commands="$(arg mock_sensor_commands)"/>
+  <xacro:if value="$(arg use_gripper)">
+    <xacro:omy_f3m_end_unit_system
+      name="OMYF3MEndUnitSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
+      use_mock_hardware="$(arg use_mock_hardware)"
+      mock_sensor_commands="$(arg mock_sensor_commands)"/>
+  </xacro:if>
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">

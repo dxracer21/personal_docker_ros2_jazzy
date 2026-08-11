@@ -6,20 +6,6 @@
     <color rgba="0.0 0.6 0.0 0.60"/>
   </material>
 
-  <!-- 좌표축 색상 -->
-  <material name="axis_red">
-    <color rgba="1.0 0.0 0.0 1.0"/>
-  </material>
-
-  <material name="axis_green">
-    <color rgba="0.0 1.0 0.0 1.0"/>
-  </material>
-
-  <material name="axis_blue">
-    <color rgba="0.0 0.0 1.0 1.0"/>
-  </material>
-
-
   <!-- ==================== UAV 본체 ==================== -->
 
   <link name="base_link">
@@ -51,77 +37,6 @@
       </geometry>
 
       <material name="uav_green"/>
-    </visual>
-
-
-    <!-- ==================== base_link 좌표축 ==================== -->
-
-    <!-- X축: 빨간색 -->
-    <visual name="base_axis_x">
-      <origin xyz="0.4 0 0" rpy="0 1.5708 0"/>
-
-      <geometry>
-        <cylinder radius="0.025" length="0.8"/>
-      </geometry>
-
-      <material name="axis_red"/>
-    </visual>
-
-    <!-- X축 끝점 (URDF는 cone geometry를 지원하지 않음) -->
-    <visual name="base_axis_x_head">
-      <origin xyz="0.84 0 0" rpy="0 0 0"/>
-
-      <geometry>
-        <sphere radius="0.05"/>
-      </geometry>
-
-      <material name="axis_red"/>
-    </visual>
-
-
-    <!-- Y축: 초록색 -->
-    <visual name="base_axis_y">
-      <origin xyz="0 0.4 0" rpy="-1.5708 0 0"/>
-
-      <geometry>
-        <cylinder radius="0.025" length="0.8"/>
-      </geometry>
-
-      <material name="axis_green"/>
-    </visual>
-
-    <!-- Y축 끝점 -->
-    <visual name="base_axis_y_head">
-      <origin xyz="0 0.84 0" rpy="0 0 0"/>
-
-      <geometry>
-        <sphere radius="0.05"/>
-      </geometry>
-
-      <material name="axis_green"/>
-    </visual>
-
-
-    <!-- Z축: 파란색 -->
-    <visual name="base_axis_z">
-      <origin xyz="0 0 0.4" rpy="0 0 0"/>
-
-      <geometry>
-        <cylinder radius="0.025" length="0.8"/>
-      </geometry>
-
-      <material name="axis_blue"/>
-    </visual>
-
-    <!-- Z축 끝점 -->
-    <visual name="base_axis_z_head">
-      <origin xyz="0 0 0.84" rpy="0 0 0"/>
-
-      <geometry>
-        <sphere radius="0.05"/>
-      </geometry>
-
-      <material name="axis_blue"/>
     </visual>
 
 
