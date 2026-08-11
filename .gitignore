@@ -10,6 +10,7 @@ ros2_ws/log/
 persistent/cache/
 persistent/ros/
 persistent/gz/
+persistent/bash_history
 
 # 기타 자동 생성 파일
 __pycache__/
