@@ -83,7 +83,7 @@ case "${COMMAND}" in
         ;;
 
     stop)
-        docker compose stop "${SERVICE_NAME}"
+        docker compose down
         ;;
 
     restart)
