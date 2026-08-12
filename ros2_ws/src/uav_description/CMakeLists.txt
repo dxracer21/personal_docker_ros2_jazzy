@@ -23,6 +23,7 @@ install(
     scripts/omy_target_follow_joint_state.py
     scripts/omy_preview_keyboard_control.py
     scripts/omy_moveit_target_tracker.py
+    scripts/omy_movej_movel_tracker.py
     scripts/omy_joint_state_preview.py
     scripts/omy_zero_joint_state.py
     scripts/omy_workspace_marker.py

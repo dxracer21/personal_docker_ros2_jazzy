@@ -10,7 +10,7 @@ joint_trajectory_executor:
 
     step_names: [home]  # Names of the steps
 
-    home: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # Initial position
+    home: [0.0, -1.3950, 2.3698, -1.0527, 1.5707963267948966, 0.0]  # Initial position
 
     duration: 10.0
     epsilon: 0.01
